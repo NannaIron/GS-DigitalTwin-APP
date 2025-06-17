@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
+
 type Sensor = {
   id: string;
   name: string;
@@ -31,9 +33,13 @@ export default function SensorsScreen() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
+  const reload = () => {
     const data = require('@/mock/sensors.json');
     setSensors(data);
+  };
+
+  useEffect(() => {
+    reload();
   }, []);
 
   return (
@@ -70,6 +76,7 @@ export default function SensorsScreen() {
           showsVerticalScrollIndicator={false}
         />
       </View>
+      <FloatingReloadButton onPress={reload} />
     </View>
   );
 }

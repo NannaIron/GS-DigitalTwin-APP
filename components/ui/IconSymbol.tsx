@@ -22,6 +22,7 @@ const MAPPING = {
   'menu': 'menu', 
   'settings': 'settings',
   'list': 'list',
+  'reload': 'refresh',
 } as IconMapping;
 
 /**

@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import SensorChart from '@/components/SensorChart';
+import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
 
 type Sensor = {
   id: string;
@@ -35,10 +36,14 @@ export default function SensorDetailScreen() {
   const router = useRouter();
   const [sensor, setSensor] = useState<Sensor | null>(null);
 
-  useEffect(() => {
+  const reload = () => {
     const data: Sensor[] = require('@/mock/sensors.json');
     const found = data.find((s: Sensor) => s.id === id);
     setSensor(found || null);
+  };
+
+  useEffect(() => {
+    reload();
   }, [id]);
 
   if (!sensor) return null;
@@ -84,6 +89,7 @@ export default function SensorDetailScreen() {
         <SensorChart data={sensor.history} minValue={sensor.minValue} maxValue={sensor.maxValue} />
         <Text style={styles.chartNote}>*Medições a cada 30 min</Text>
       </View>
+      <FloatingReloadButton onPress={reload} />
     </View>
   );
 }

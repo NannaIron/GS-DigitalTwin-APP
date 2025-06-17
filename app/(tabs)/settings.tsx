@@ -9,14 +9,12 @@ export default function SettingsScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    // Carrega a URL do backend do settings.json
     try {
       const settings = require('@/mock/settings.json');
       setUrl(settings.url || '');
     } catch {
       setUrl('');
     }
-    // Recupera usuário logado do AsyncStorage
     AsyncStorage.getItem('usuarioLogado').then(storedUser => {
       setUser(storedUser || '');
     });
