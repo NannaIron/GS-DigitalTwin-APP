@@ -18,5 +18,9 @@
   {
     "email": "Alexandre",
     "password": "98621"
+  },
+  {
+    "email": "Convidado",
+    "password": "123456"
   }
 ]
