@@ -1,9 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 type Sensor = {
   id: string;
@@ -31,50 +32,90 @@ const statusIcons: Record<string, string> = {
 
 export default function SensorsScreen() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const spinAnim = useRef(new Animated.Value(0)).current;
+
+  const startSpin = () => {
+    spinAnim.setValue(0);
+    Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 900,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  const stopSpin = () => {
+    spinAnim.stopAnimation();
+    spinAnim.setValue(0);
+  };
+
   const reload = () => {
-    const data = require('@/mock/sensors.json');
-    setSensors(data);
+    setLoading(true);
+    setSensors([]);
+    startSpin();
+    setTimeout(() => {
+      const data = require('@/mock/sensors.json');
+      setSensors(data);
+      setLoading(false);
+      stopSpin();
+    }, 900);
   };
 
   useEffect(() => {
     reload();
   }, []);
 
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sensores</Text>
       <View style={styles.infoBox}>
-        <FlatList
-          data={sensors}
-          keyExtractor={item => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.sensorItem}
-              onPress={() => router.push({ pathname: '/sensor-detail', params: { id: item.id } })}
-            >
-              <View style={styles.sensorInfo}>
-                <Text style={styles.sensorName}>{item.name}</Text>
-                <Text style={styles.sensorType}>{item.type}</Text>
-              </View>
-              <View style={styles.statusBox}>
-                <Text style={[styles.statusText, { color: statusColors[item.status] || '#888' }]}>
-                  {item.status}
-                </Text>
-                <MaterialIcons
-                  name={statusIcons[item.status] || 'help'}
-                  size={22}
-                  color={statusColors[item.status] || '#888'}
-                  style={{ marginLeft: 6 }}
-                />
-              </View>
-            </TouchableOpacity>
-          )}
-          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-          contentContainerStyle={{ paddingVertical: 4 }}
-          showsVerticalScrollIndicator={false}
-        />
+        {loading ? (
+          <View style={styles.loadingBox}>
+            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+              <IconSymbol name="reload" size={80} color="#234366" />
+            </Animated.View>
+          </View>
+        ) : (
+          <FlatList
+            data={sensors}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.sensorItem}
+                onPress={() => router.push({ pathname: '/sensor-detail', params: { id: item.id } })}
+              >
+                <View style={styles.sensorInfo}>
+                  <Text style={styles.sensorName}>{item.name}</Text>
+                  <Text style={styles.sensorType}>{item.type}</Text>
+                </View>
+                <View style={styles.statusBox}>
+                  <Text style={[styles.statusText, { color: statusColors[item.status] || '#888' }]}>
+                    {item.status}
+                  </Text>
+                  <MaterialIcons
+                    name={statusIcons[item.status] || 'help'}
+                    size={22}
+                    color={statusColors[item.status] || '#888'}
+                    style={{ marginLeft: 6 }}
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
+            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            contentContainerStyle={{ paddingVertical: 4 }}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
       <FloatingReloadButton onPress={reload} />
     </View>
@@ -113,5 +154,11 @@ const styles = StyleSheet.create({
   sensorName: { fontSize: 18, fontWeight: 'bold', color: '#222' },
   sensorType: { fontSize: 15, color: '#888', marginTop: 2 },
   statusBox: { flexDirection: 'row', alignItems: 'center', marginLeft: 12 },
-  statusText: { fontWeight: 'bold', fontSize: 15 }
+  statusText: { fontWeight: 'bold', fontSize: 15 },
+  loadingBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 180,
+  },
 });

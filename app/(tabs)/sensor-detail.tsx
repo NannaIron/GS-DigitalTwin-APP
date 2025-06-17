@@ -1,9 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import SensorChart from '@/components/SensorChart';
 import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 type Sensor = {
   id: string;
@@ -35,18 +36,69 @@ export default function SensorDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [sensor, setSensor] = useState<Sensor | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const spinAnim = useRef(new Animated.Value(0)).current;
+
+  const startSpin = () => {
+    spinAnim.setValue(0);
+    Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 900,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  const stopSpin = () => {
+    spinAnim.stopAnimation();
+    spinAnim.setValue(0);
+  };
 
   const reload = () => {
-    const data: Sensor[] = require('@/mock/sensors.json');
-    const found = data.find((s: Sensor) => s.id === id);
-    setSensor(found || null);
+    setLoading(true);
+    setSensor(null);
+    startSpin();
+    setTimeout(() => {
+      const data: Sensor[] = require('@/mock/sensors.json');
+      const found = data.find((s: Sensor) => s.id === id);
+      setSensor(found || null);
+      setLoading(false);
+      stopSpin();
+    }, 900);
   };
 
   useEffect(() => {
     reload();
   }, [id]);
 
-  if (!sensor) return null;
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  if (loading || !sensor) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+            <MaterialIcons name="arrow-back" size={34} color="#888" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Detalhes do Sensor</Text>
+        </View>
+        <View style={styles.infoBox}>
+          <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+              <IconSymbol name="reload" size={80} color="#234366" />
+            </Animated.View>
+          </View>
+        </View>
+        <FloatingReloadButton onPress={reload} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
