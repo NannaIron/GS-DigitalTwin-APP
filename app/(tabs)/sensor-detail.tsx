@@ -42,12 +42,13 @@ export default function SensorDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Detalhes do Sensor</Text>
-      <View style={styles.infoBox}>
+      <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <MaterialIcons name="arrow-back" size={24} color="#234366" />
-          <Text style={styles.backText}>Voltar</Text>
+          <MaterialIcons name="arrow-back" size={34} color="#888" />
         </TouchableOpacity>
+        <Text style={styles.title}>Detalhes do Sensor</Text>
+      </View>
+      <View style={styles.infoBox}>
         <View style={styles.headerRow}>
           <Text style={styles.sensorName}>{sensor.name}</Text>
           <View style={styles.statusRow}>
@@ -63,29 +64,16 @@ export default function SensorDetailScreen() {
           </View>
         </View>
         <Text style={styles.statusDesc}>{sensor.statusDescription}</Text>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>ID:</Text>
-          <Text style={styles.value}>{sensor.id}</Text>
-        </View>
+        <Text style={styles.description}>{sensor.description}</Text>
         <View style={styles.detailRow}>
           <Text style={styles.label}>Tipo:</Text>
           <Text style={styles.value}>{sensor.type}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Descrição:</Text>
-          <Text style={styles.value}>{sensor.description}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Unidade:</Text>
-          <Text style={styles.value}>{sensor.unit}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Valor Atual:</Text>
-          <Text style={styles.value}>{sensor.value}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Histórico:</Text>
-          <Text style={styles.value}>{sensor.history.join(', ')}</Text>
+          <Text style={styles.label}>Valor:</Text>
+          <Text style={styles.value}>
+            {sensor.value} <Text style={styles.value}>{sensor.unit}</Text>
+          </Text>
         </View>
       </View>
     </View>
@@ -94,7 +82,20 @@ export default function SensorDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#234366', alignItems: 'center', paddingTop: 60 },
-  title: { color: '#fff', fontSize: 28, fontWeight: 'bold', marginBottom: 32 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '85%',
+    marginBottom: 32,
+  },
+  backBtn: {
+    marginRight: 12,
+    backgroundColor: 'transparent',
+    padding: 0,
+    borderWidth: 0,
+    elevation: 0,
+  },
+  title: { color: '#fff', fontSize: 28, fontWeight: 'bold' },
   infoBox: {
     backgroundColor: '#fff',
     borderRadius: 16,
@@ -106,33 +107,29 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    marginBottom: 12,
-    backgroundColor: 'transparent',
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderWidth: 0,
-    elevation: 0,
-  },
-  backText: { color: '#234366', fontSize: 16, marginLeft: 4, fontWeight: 'bold' },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 0,
   },
   sensorName: { fontSize: 22, fontWeight: 'bold', color: '#234366', flex: 1, flexWrap: 'wrap' },
   statusRow: { flexDirection: 'row', alignItems: 'center', marginLeft: 8 },
   statusText: { fontWeight: 'bold', fontSize: 16 },
-  statusDesc: { color: '#888', fontSize: 14, marginBottom: 12 },
+  statusDesc: { color: '#888', fontSize: 14, marginBottom: 8, marginTop: 4 },
+  description: {
+    color: '#222',
+    fontSize: 16,
+    marginBottom: 8,
+    marginTop: 4,
+    flexWrap: 'wrap',
+    width: '100%',
+  },
   detailRow: {
     flexDirection: 'row',
     marginBottom: 8,
     alignItems: 'flex-start',
   },
-  label: { fontWeight: 'bold', color: '#234366', width: 110 },
+  label: { fontWeight: 'bold', color: '#234366', width: 70 },
   value: { color: '#222', fontSize: 16, flex: 1, flexWrap: 'wrap' },
 });
