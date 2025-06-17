@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import SensorChart from '@/components/SensorChart';
 
 type Sensor = {
   id: string;
@@ -9,10 +10,12 @@ type Sensor = {
   type: string;
   description: string;
   unit: string;
-  value: number;
+  value: number | null;
   status: string;
   statusDescription: string;
   history: number[];
+  minValue: number;
+  maxValue: number;
 };
 
 const statusColors: Record<string, string> = {
@@ -72,9 +75,14 @@ export default function SensorDetailScreen() {
         <View style={styles.detailRow}>
           <Text style={styles.label}>Valor:</Text>
           <Text style={styles.value}>
-            {sensor.value} <Text style={styles.value}>{sensor.unit}</Text>
+            {sensor.value === null || sensor.value === undefined
+              ? '--'
+              : `${sensor.value} ${sensor.unit}`}
           </Text>
         </View>
+        <Text style={styles.chartTitle}>Histórico - Última hora</Text>
+        <SensorChart data={sensor.history} minValue={sensor.minValue} maxValue={sensor.maxValue} />
+        <Text style={styles.chartNote}>*Medições a cada 30 min</Text>
       </View>
     </View>
   );
@@ -132,4 +140,17 @@ const styles = StyleSheet.create({
   },
   label: { fontWeight: 'bold', color: '#234366', width: 70 },
   value: { color: '#222', fontSize: 16, flex: 1, flexWrap: 'wrap' },
+  chartTitle: {
+    fontWeight: 'bold',
+    color: '#234366',
+    fontSize: 16,
+    marginTop: 18,
+    marginBottom: 0,
+  },
+  chartNote: {
+    color: '#888',
+    fontSize: 12,
+    marginTop: -15,
+    textAlign: 'left',
+  },
 });
