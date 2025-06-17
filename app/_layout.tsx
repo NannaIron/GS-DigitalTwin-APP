@@ -1,20 +1,15 @@
-import { Stack, useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { Stack } from 'expo-router';
 
 export default function RootLayout() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/login');
-  }, []);
-
   return (
     <Stack
+      initialRouteName="login"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
       }}
     >
+      <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" />
     </Stack>
   );

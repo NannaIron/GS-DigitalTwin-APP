@@ -1,4 +1,4 @@
-# Digital Twin - Sensor Viewer
+# SPRINT-DigitalTwin-APP
 
 Aplicativo desenvolvido para visualização de sensores industriais, simulação de Digital Twin e monitoramento de dados em tempo real. O projeto utiliza [Expo](https://expo.dev) e React Native, com navegação baseada em arquivos e simulação de dados mockados.
 

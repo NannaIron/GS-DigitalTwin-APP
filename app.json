@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "GS-DigitalTwin-APP",
-    "slug": "GS-DigitalTwin-APP",
+    "name": "SPRINT-DigitalTwin-APP",
+    "slug": "SPRINT-DigitalTwin-APP",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
