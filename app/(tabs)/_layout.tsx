@@ -29,6 +29,12 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="settings" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="sensor-detail"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

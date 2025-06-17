@@ -21,7 +21,7 @@ export default function LoginScreen() {
       );
       if (found) {
         await AsyncStorage.setItem('usuarioLogado', email);
-        router.replace('/(tabs)/sensors');
+        router.replace('/(tabs)/menu');
       } else {
         setError(true);
       }

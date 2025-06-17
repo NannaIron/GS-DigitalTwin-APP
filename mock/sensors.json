@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "name": "Temperatura Ambiente",
+    "name": "Termometer 6738 Pro",
     "type": "Temperatura",
     "description": "Sensor de temperatura do ambiente da linha de produção.",
     "unit": "°C",
@@ -12,35 +12,35 @@
   },
   {
     "id": "2",
-    "name": "Pressão Principal",
+    "name": "RX 5673",
     "type": "Pressão",
     "description": "Sensor de pressão do sistema pneumático principal.",
     "unit": "psi",
     "value": 98.2,
     "status": "ALERTA",
-    "statusDescription": "Pressão acima do ideal.",
+    "statusDescription": "Valor acima do ideal.",
     "history": [96.5, 97.0, 97.8, 98.0, 98.2, 98.1, 98.2]
   },
   {
     "id": "3",
-    "name": "Vibração Motor",
+    "name": "Oscillator 9000",
     "type": "Vibração",
     "description": "Sensor de vibração do motor do compressor.",
     "unit": "g",
     "value": 0.82,
     "status": "ERRO",
-    "statusDescription": "Vibração excessiva detectada.",
+    "statusDescription": "Perda de conexão.",
     "history": [0.50, 0.60, 0.70, 0.75, 0.80, 0.82, 0.82]
   },
   {
     "id": "4",
-    "name": "Fluxo de Ar",
+    "name": "FlowMaster",
     "type": "Fluxo",
     "description": "Sensor de fluxo de ar na linha secundária.",
     "unit": "L/min",
     "value": 32.1,
     "status": "OK",
-    "statusDescription": "Fluxo dentro do esperado.",
+    "statusDescription": "Funcionando normalmente.",
     "history": [30.0, 31.0, 31.5, 32.0, 32.1, 32.0, 32.1]
   }
 ]

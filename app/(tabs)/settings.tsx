@@ -29,7 +29,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+      <Text style={styles.title}>Configurações</Text>
       <View style={styles.infoBox}>
         <Text style={styles.label}>Usuário</Text>
         <View style={styles.textBox}>
