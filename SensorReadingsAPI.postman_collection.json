@@ -1,0 +1,74 @@
+{
+  "info": {
+    "_postman_id": "8a8c6a32-1234-4321-abcd-9876543210ab",
+    "name": "Sensor Readings API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Reading",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sensorId\": \"1\",\n  \"readingValue\": 23.7,\n  \"timestamp\": \"2025-06-19T00:16:21\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/readings",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "readings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Readings",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/api/readings",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "readings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Readings by Sensor ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/api/readings/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "readings",
+            "1"
+          ]
+        }
+      }
+    }
+  ]
+}
