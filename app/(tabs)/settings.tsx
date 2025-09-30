@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { environment } from '@/environment';
 
 export default function SettingsScreen() {
   const [url, setUrl] = useState('');
@@ -9,12 +10,8 @@ export default function SettingsScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    try {
-      const settings = require('@/mock/settings.json');
-      setUrl(settings.url || '');
-    } catch {
-      setUrl('');
-    }
+    setUrl(environment.apiUrl || '');
+    
     AsyncStorage.getItem('usuarioLogado').then(storedUser => {
       setUser(storedUser || '');
     });
