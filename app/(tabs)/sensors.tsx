@@ -5,6 +5,7 @@ import { Animated, Easing, FlatList, StyleSheet, Text, TouchableOpacity, View } 
 
 import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { getReadings } from '@/service/sensors.service';
 
 type Sensor = {
   id: string;
@@ -58,12 +59,23 @@ export default function SensorsScreen() {
     setLoading(true);
     setSensors([]);
     startSpin();
-    setTimeout(() => {
-      const data = require('@/mock/sensors.json');
-      setSensors(data);
-      setLoading(false);
-      stopSpin();
-    }, 900);
+    (async () => {
+      try {
+        const data = await getReadings();
+        setSensors(data);
+      } catch (err) {
+        console.error('Erro ao buscar sensores do backend, usando mock:', err);
+        try {
+          const data = require('@/mock/sensors.json');
+          setSensors(data);
+        } catch (e) {
+          console.error('Falha ao carregar mock:', e);
+        }
+      } finally {
+        setLoading(false);
+        stopSpin();
+      }
+    })();
   };
 
   useEffect(() => {
