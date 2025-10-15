@@ -5,6 +5,7 @@ import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'reac
 import SensorChart from '@/components/SensorChart';
 import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { getReadingById } from '@/service/sensors.service';
 
 type Sensor = {
   id: string;
@@ -61,13 +62,24 @@ export default function SensorDetailScreen() {
     setLoading(true);
     setSensor(null);
     startSpin();
-    setTimeout(() => {
-      const data: Sensor[] = require('@/mock/sensors.json');
-      const found = data.find((s: Sensor) => s.id === id);
-      setSensor(found || null);
-      setLoading(false);
-      stopSpin();
-    }, 900);
+    (async () => {
+      try {
+        const data = await getReadingById(id as string);
+        setSensor(data);
+      } catch (err) {
+        console.error('Erro ao buscar sensor do backend, usando mock:', err);
+        try {
+          const data: Sensor[] = require('@/mock/sensors.json');
+          const found = data.find((s: Sensor) => s.id === id);
+          setSensor(found || null);
+        } catch (e) {
+          console.error('Falha ao carregar mock:', e);
+        }
+      } finally {
+        setLoading(false);
+        stopSpin();
+      }
+    })();
   };
 
   useEffect(() => {
