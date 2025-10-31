@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const TOKEN_KEY = 'auth.token';
+const USER_EMAIL_KEY = 'auth.userEmail';
 
 export const authApi = axios.create({
   baseURL: environment.apiUrl,
@@ -30,13 +31,24 @@ export async function loginRequest(email: string, password: string) {
   if (data?.token) {
     await AsyncStorage.setItem(TOKEN_KEY, data.token);
   }
+  if (data?.email) {
+    await AsyncStorage.setItem(USER_EMAIL_KEY, data.email);
+  }
   return data;
 }
 
 export async function logout() {
   await AsyncStorage.removeItem(TOKEN_KEY);
+  await AsyncStorage.removeItem(USER_EMAIL_KEY);
 }
 
 export async function getToken() {
   return AsyncStorage.getItem(TOKEN_KEY);
+}
+
+/**
+ * Retorna o email do usuário salvo no AsyncStorage (se houver)
+ */
+export async function getUserEmail() {
+  return AsyncStorage.getItem(USER_EMAIL_KEY);
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { environment } from '@/environment';
-import { currentToken, logoutBackend } from '@/service/users.service';
+import { currentUserEmail, logoutBackend } from '@/service/users.service';
  
 export default function SettingsScreen() {
   const [url, setUrl] = useState('');
@@ -12,8 +12,8 @@ export default function SettingsScreen() {
   useEffect(() => {
     setUrl(environment.apiUrl || '');
  
-    currentToken().then(storedToken => {
-      setUser(storedToken || '');
+    currentUserEmail().then(storedEmail => {
+      setUser(storedEmail || '');
     });
   }, []);
  

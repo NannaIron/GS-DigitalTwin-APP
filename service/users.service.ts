@@ -1,4 +1,5 @@
 import { logout as authLogout, getToken, loginRequest } from './auth.service';
+import { getUserEmail } from './auth.service';
 
 /**
  * Wrapper para login via backend (JWT)
@@ -19,4 +20,11 @@ export async function logoutBackend() {
  */
 export async function currentToken() {
   return getToken();
+}
+
+/**
+ * Retorna email do usuário salvo no login (se houver)
+ */
+export async function currentUserEmail() {
+  return getUserEmail();
 }
