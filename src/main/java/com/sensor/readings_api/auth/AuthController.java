@@ -21,7 +21,10 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody UserCredentials creds) {
         if (authService.authenticate(creds.getEmail(), creds.getPassword())) {
             String token = jwtUtil.generateToken(creds.getEmail());
-            return ResponseEntity.ok(Map.of("token", token));
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "email", creds.getEmail()
+            ));
         } else {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
