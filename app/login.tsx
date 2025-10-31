@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { loginBackend } from '@/service/users.service';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -14,18 +15,14 @@ export default function LoginScreen() {
     setLoading(true);
     setError(false);
     try {
-      const users = require('@/mock/users.json');
-      const found = users.find(
-        (u: { email: string; password: string }) =>
-          u.email === email.trim() && u.password === password
-      );
-      if (found) {
-        await AsyncStorage.setItem('usuarioLogado', email);
+      const res = await loginBackend(email.trim(), password);
+      if (res && (res.token || res.success)) {
         router.replace('/(tabs)/menu');
       } else {
         setError(true);
       }
     } catch (e) {
+      console.error('Login falhou:', e);
       setError(true);
     }
     setLoading(false);

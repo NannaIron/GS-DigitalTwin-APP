@@ -1,11 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { getReadings } from '@/service/sensors.service';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { FloatingReloadButton } from '@/components/ui/FloatingReloadButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { getReadings } from '@/service/sensors.service';
 
 type Sensor = {
   id: string;
@@ -34,6 +34,7 @@ const statusIcons: Record<string, string> = {
 export default function SensorsScreen() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const spinAnim = useRef(new Animated.Value(0)).current;
@@ -58,19 +59,15 @@ export default function SensorsScreen() {
   const reload = () => {
     setLoading(true);
     setSensors([]);
+    setError(null);
     startSpin();
     (async () => {
       try {
         const data = await getReadings();
         setSensors(data);
       } catch (err) {
-        console.error('Erro ao buscar sensores do backend, usando mock:', err);
-        try {
-          const data = require('@/mock/sensors.json');
-          setSensors(data);
-        } catch (e) {
-          console.error('Falha ao carregar mock:', e);
-        }
+        console.error('Erro ao buscar sensores do backend:', err);
+        setError('Falha ao carregar sensores. Verifique sua conexão e tente novamente.');
       } finally {
         setLoading(false);
         stopSpin();
@@ -96,6 +93,10 @@ export default function SensorsScreen() {
             <Animated.View style={{ transform: [{ rotate: spin }] }}>
               <IconSymbol name="reload" size={80} color="#234366" />
             </Animated.View>
+          </View>
+        ) : error ? (
+          <View style={{ padding: 16, alignItems: 'center' }}>
+            <Text style={{ color: '#d9534f', textAlign: 'center' }}>{error}</Text>
           </View>
         ) : (
           <FlatList
@@ -129,7 +130,6 @@ export default function SensorsScreen() {
           />
         )}
       </View>
-      <FloatingReloadButton onPress={reload} />
     </View>
   );
 }

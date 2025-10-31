@@ -1,27 +1,27 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { environment } from '@/environment';
-
+import { currentToken, logoutBackend } from '@/service/users.service';
+ 
 export default function SettingsScreen() {
   const [url, setUrl] = useState('');
   const [user, setUser] = useState('');
   const router = useRouter();
-
+ 
   useEffect(() => {
     setUrl(environment.apiUrl || '');
-    
-    AsyncStorage.getItem('usuarioLogado').then(storedUser => {
-      setUser(storedUser || '');
+ 
+    currentToken().then(storedToken => {
+      setUser(storedToken || '');
     });
   }, []);
-
+ 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('usuarioLogado');
+    await logoutBackend();
     router.replace('/login');
   };
-
+ 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Configurações</Text>

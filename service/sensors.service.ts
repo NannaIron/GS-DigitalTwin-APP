@@ -1,5 +1,5 @@
-import { environment } from '@/environment';
 import axios from 'axios';
+import { authApi } from './auth.service';
 
 export type Sensor = {
   id: string;
@@ -21,12 +21,7 @@ export type ReadingPayload = {
   timestamp: string; 
 };
 
-const api = axios.create({
-  baseURL: environment.apiUrl,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const api = authApi;
 
 /**
  * POST /readings
