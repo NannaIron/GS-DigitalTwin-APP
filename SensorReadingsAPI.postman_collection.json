@@ -1,74 +1,156 @@
 {
-  "info": {
-    "_postman_id": "8a8c6a32-1234-4321-abcd-9876543210ab",
-    "name": "Sensor Readings API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Create Reading",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"sensorId\": \"1\",\n  \"readingValue\": 23.7,\n  \"timestamp\": \"2025-06-19T00:16:21\"\n}"
-        },
-        "url": {
-          "raw": "http://localhost:8080/api/readings",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "readings"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Get All Readings",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "http://localhost:8080/api/readings",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "readings"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Get Readings by Sensor ID",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "http://localhost:8080/api/readings/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "readings",
-            "1"
-          ]
-        }
-      }
-    }
-  ]
+	"info": {
+		"_postman_id": "2eba223f-9352-41bf-92b4-fa953f09f585",
+		"name": "Sensor Readings API (with Auth)",
+		"description": "Collection with login (JWT) and example requests. Run Login first to populate {{token}}.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39681934"
+	},
+	"item": [
+		{
+			"name": "Login (get JWT)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"  const json = pm.response.json();",
+							"  if (json && json.token) {",
+							"    pm.environment.set('token', json.token);",
+							"    console.log('token saved to environment.token');",
+							"  }",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"Giovanna\",\n  \"password\": \"99639\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"2"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Readings (protected)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/readings",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"2"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"readings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Reading (protected)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": \"1\",\n  \"name\": \"Termometer 6738 Pro\",\n  \"type\": \"Temperatura\",\n  \"description\": \"Sensor de temperatura do ambiente da linha de produção.\",\n  \"unit\": \"°C\",\n  \"value\": 23.7,\n  \"status\": \"OK\",\n  \"statusDescription\": \"Funcionando normalmente.\",\n  \"history\": [22.8, 23.2, 23.5, 23.7, 23.6, 23.7],\n  \"minValue\": 22.5,\n  \"maxValue\": 23.6\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/readings",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"2"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"readings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reading by ID (protected)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/readings/1",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"2"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"readings",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
 }

@@ -11,6 +11,7 @@ Este projeto fornece uma API REST em Java com Spring Boot para persistir leitura
 * Spring Data JPA
 * H2 Database (modo *file*)
 * Maven
+* JWT para autenticação (simples, em memória)
 
 ## Pré-requisitos
 
@@ -33,10 +34,98 @@ Este projeto fornece uma API REST em Java com Spring Boot para persistir leitura
    ```
 3. A API ficará disponível em `http://localhost:8080`.
 
+## Autenticação (JWT)
+
+A aplicação expõe um endpoint de login que retorna um JWT e o email usado no login.
+
+- Endpoint de login (sem autenticação): POST `/api/auth/login`  
+  - Body (JSON):
+    ```json
+    {
+      "email": "User",
+      "password": "00000"
+    }
+    ```
+  - Resposta (exemplo) — status 200:
+    ```json
+    {
+      "token": "<jwt_token_aqui>",
+      "email": "User"
+    }
+    ```
+  - Em caso de credenciais inválidas retorna 401 com `{ "error": "Invalid credentials" }`.
+
+As contas atualmente disponíveis estão em memória (veja [`com.sensor.readings_api.auth.AuthService`](src/main/java/com/sensor/readings_api/auth/AuthService.java)).
+
+Para acessar endpoints protegidos (por exemplo, `/api/readings`) adicione o header:
+```
+Authorization: Bearer <jwt_token_aqui>
+```
+ou configure o Authorization do Postman como Bearer Token com o token retornado.
+
+A chave e tempo de expiração do JWT estão em [src/main/resources/application.properties](src/main/resources/application.properties):
+```
+jwt.secret=change_this_to_a_strong_secret_key_which_is_long_enough
+jwt.expiration-ms=3600000
+```
+Substitua `jwt.secret` por uma chave forte antes de usar em produção.
+
+## Endpoints Disponíveis
+
+| Método | URL                  | Descrição                               |
+| ------ | -------------------- | --------------------------------------- |
+| POST   | `/api/auth/login`    | Login, retorna JWT e email              |
+| POST   | `/api/readings`      | Insere ou atualiza uma leitura completa (protegido) |
+| GET    | `/api/readings`      | Lista todas as leituras (protegido)     |
+| GET    | `/api/readings/{id}` | Retorna a leitura pelo seu ID (protegido) |
+
+## Testando com Postman
+
+1. Importe [SensorReadingsAPI.postman_collection.json](SensorReadingsAPI.postman_collection.json).
+2. Execute a request "Login" (POST `/api/auth/login`) e copie o campo `token` da resposta.
+3. Nas requests protegidas configure o header:
+   ```
+   Authorization: Bearer {{token}}
+   ```
+   (ou use Authorization → Bearer Token no Postman)
+
+Dica: na collection eu adiciono um script de teste que salva `token` em variável de ambiente automaticamente ao receber a resposta do login.
+
+## GET — Exemplo de resposta (todas as leituras)
+
+A resposta do endpoint GET `/api/readings` (quando há leituras) é um array de objetos Reading. Exemplo de resposta (JSON):
+
+```json
+[
+    {
+        "id": "12",
+        "name": "Termometer 6738 Pro",
+        "type": "Temperatura",
+        "description": "Sensor de temperatura do ambiente da linha de produção.",
+        "unit": "°C",
+        "status": "OK",
+        "statusDescription": "Funcionando normalmente.",
+        "minValue": null,
+        "maxValue": 23.6,
+        "history": [
+            22.8,
+            23.2,
+            23.5,
+            23.7,
+            23.6,
+            23.7
+        ],
+        "value": null
+    }
+]
+```
+
+> Use o token retornado no login no header:
+> Authorization: Bearer <jwt_token_aqui>
+
 ## Banco de Dados H2
 
 * O arquivo de dados será criado em:
-
   ```
   ./data/readings.mv.db
   ```
@@ -49,51 +138,29 @@ Este projeto fornece uma API REST em Java com Spring Boot para persistir leitura
 
 > Para resetar o banco, basta parar a aplicação e excluir os arquivos `readings.mv.db` e `readings.trace.db` na pasta `./data/`.
 
-## Endpoints Disponíveis
+## Exemplo de Requisições cURL
 
-| Método | URL                  | Descrição                               |
-| ------ | -------------------- | --------------------------------------- |
-| POST   | `/api/readings`      | Insere ou atualiza uma leitura completa |
-| GET    | `/api/readings`      | Lista todas as leituras                 |
-| GET    | `/api/readings/{id}` | Retorna a leitura pelo seu ID           |
+* **Login (obter JWT)**
 
-### Exemplo de Requisições cURL
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"User","password":"000000"}'
+```
 
-* **POST** `/api/readings`:
-
-  ```bash
-  curl -X POST http://localhost:8080/api/readings \
-    -H "Content-Type: application/json" \
-    -d '{
-      "id": "1",
-      "name": "Termometer 6738 Pro",
-      "type": "Temperatura",
-      "description": "Sensor de temperatura do ambiente da linha de produção.",
-      "unit": "°C",
-      "value": 23.7,
-      "status": "OK",
-      "statusDescription": "Funcionando normalmente.",
-      "history": [22.8, 23.2, 23.5, 23.7, 23.6, 23.7],
-      "minValue": 22.5,
-      "maxValue": 23.6
-    }'
-  ```
-
-* **GET** todas as leituras:
-
-  ```bash
-  curl http://localhost:8080/api/readings
-  ```
-
-* **GET** leitura por ID:
-
-  ```bash
-  curl http://localhost:8080/api/readings/1
-  ```
+* **GET** todas as leituras (use o token retornado)
+```bash
+curl -H "Authorization: Bearer <jwt_token>" http://localhost:8080/api/readings
+```
 
 ## Coleção Postman
 
 Importe o arquivo `SensorReadingsAPI.postman_collection.json` disponível na raiz do projeto para testar os endpoints no Postman.
+
+## Observações
+
+- Implementação de exemplo com senhas em texto e usuários em memória — adequada apenas para desenvolvimento/demonstração. Para produção, use armazenamento seguro e hashing de senhas.
+- JWT é gerado em [`com.sensor.readings_api.auth.JwtUtil`](src/main/java/com/sensor/readings_api/auth/JwtUtil.java) e aplicado via filtro [`com.sensor.readings_api.auth.JwtFilter`](src/main/java/com/sensor/readings_api/auth/JwtFilter.java) e configuração [`com.sensor.readings_api.auth.SecurityConfig`](src/main/java/com/sensor/readings_api/auth/SecurityConfig.java).
 
 ## Integrantes do Grupo
 
